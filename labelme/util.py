@@ -109,14 +109,21 @@ def draw_label_png(label_me_json,name2pixelValue):
 
 def crop_label_png(label_xml,original_image,label_image):
     tree = elemTree.parse(label_xml)
-    bbox = tree.getroot().find('object').find('bndbox')
-    xmin = int(bbox.find('xmin').text)
-    ymin = int(bbox.find('ymin').text)
-    xmax = int(bbox.find('xmax').text)
-    ymax = int(bbox.find('ymax').text)
-    cropped_ori_img = original_image[ymin:ymax,xmin:xmax]
-    cropped_lbl_img = label_image[ymin:ymax,xmin:xmax]
-    return cropped_ori_img, cropped_lbl_img
+    objs = tree.getroot().findall('object')
+    list_cropped_ori_img = []
+    list_cropped_lbl_img = []
+    for obj in objs:
+        bbox = obj.find('bndbox')
+        xmin = int(bbox.find('xmin').text)
+        ymin = int(bbox.find('ymin').text)
+        xmax = int(bbox.find('xmax').text)
+        ymax = int(bbox.find('ymax').text)
+        cropped_ori_img = original_image[ymin:ymax,xmin:xmax]
+        cropped_lbl_img = label_image[ymin:ymax,xmin:xmax]
+        list_cropped_ori_img.append(cropped_ori_img)
+        list_cropped_lbl_img.append(cropped_lbl_img)
+
+    return list_cropped_ori_img, list_cropped_lbl_img
 
 def show_img(img):
     cv2.imshow("img",img)

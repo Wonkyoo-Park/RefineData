@@ -39,18 +39,19 @@ if __name__ == "__main__":
                 full_path2json = os.path.join(args.input_json_dir,jsonfilename)
                 name2pixelValue = pd.read_csv("labelme/name_list_with_pixel_value.csv", index_col=0,skiprows=0).T.to_dict()
                 original_image, label_image = draw_label_png(full_path2json, name2pixelValue)
-                cropped_ori_img, cropped_lbl_img = crop_label_png(full_path2xml, original_image, label_image)
-                path2save_orig_img = args.output_dir + "/img/"
-                path2save_seg_img = args.output_dir + "/seg/"
-                if not os.path.isdir(path2save_orig_img):
-                    os.makedirs(path2save_orig_img,0o777)
-                if not os.path.isdir(path2save_seg_img):
-                    os.makedirs(path2save_seg_img,0o777)
-                dst_path2save_orig_img = path2save_orig_img + '{:08d}.png'.format(i)
-                dst_path2save_seg_img = path2save_seg_img + '{:08d}.png'.format(i)
-                save_img(dst_path2save_orig_img,cropped_ori_img)
-                save_img(dst_path2save_seg_img,cropped_lbl_img)
-                i+=1
+                list_cropped_ori_img, list_cropped_lbl_img = crop_label_png(full_path2xml, original_image, label_image)
+                for cropped_ori_img, cropped_lbl_img in zip(list_cropped_ori_img, list_cropped_lbl_img):
+                    path2save_orig_img = args.output_dir + "/img/"
+                    path2save_seg_img = args.output_dir + "/seg/"
+                    if not os.path.isdir(path2save_orig_img):
+                        os.makedirs(path2save_orig_img,0o777)
+                    if not os.path.isdir(path2save_seg_img):
+                        os.makedirs(path2save_seg_img,0o777)
+                    dst_path2save_orig_img = path2save_orig_img + '{:08d}.png'.format(i)
+                    dst_path2save_seg_img = path2save_seg_img + '{:08d}.png'.format(i)
+                    save_img(dst_path2save_orig_img,cropped_ori_img)
+                    save_img(dst_path2save_seg_img,cropped_lbl_img)
+                    i+=1
 
                 # show_img(cropped_ori_img)
                 # show_img(cropped_lbl_img)
