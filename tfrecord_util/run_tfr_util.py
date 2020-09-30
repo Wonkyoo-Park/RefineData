@@ -13,9 +13,9 @@ if __name__ == "__main__":
     parser.add_argument('--input_image_dir', '-i', type=str, help='an input folder to original dataset')
     parser.add_argument('--input_xml_dir', '-x', type=str, help='an input folder including xml files of bboxes')
     parser.add_argument('--input_json_dir', '-j', type=str, help='an input folder including json files of segmentation')
-    parser.add_argument('--input_xml_bbox_file', '-xf', default="C:/Users/dylee/Documents/alphado/dataset/refined_dataset/keratitis/labelimg/_2737476_orig[1].xml"
+    parser.add_argument('--input_xml_bbox_file', '-xf', default="C:/Users/dylee/Documents/카카오톡 받은 파일/해당에러파일들/해당에러파일들/1t[1].xml"
                         ,type=str, help='an input file path of xml file to bboxes for test')
-    parser.add_argument('--input_json_seg_file', '-jf', default="C:/Users/dylee/Documents/alphado/dataset/refined_dataset/keratitis/labelme/_2737476_orig[1].json",
+    parser.add_argument('--input_json_seg_file', '-jf', default="C:/Users/dylee/Documents/카카오톡 받은 파일/해당에러파일들/해당에러파일들/1t[1].json",
                         type=str, help='an input file path of json file of segmentation for test')
     parser.add_argument('--output_dir', '-o', type=str, help='an input folder for refined data to be saved')
     args = parser.parse_args()

@@ -60,8 +60,12 @@ def apply_aug_train(image_features,args):
         batch_img.append(decode_img)
         batch_seg.append(decode_seg)
 
-    batch_img=tf.convert_to_tensor(np.asarray(batch_img),dtype=tf.float32)
-    batch_seg=tf.convert_to_tensor(np.asarray(batch_seg),dtype=tf.float32)
+    batch_img=tf.concat(batch_img,axis=0)
+    batch_seg=tf.concat(batch_seg,axis=0)
+
+
+    # batch_img=tf.convert_to_tensor(np.asarray(batch_img),dtype=tf.float32)
+    # batch_seg=tf.convert_to_tensor(np.asarray(batch_seg),dtype=tf.float32)
 
     batch_seg=np.asarray(batch_seg)
 
@@ -71,7 +75,7 @@ def apply_aug_train(image_features,args):
     # data['label_falling'] = decode_label_falling
     return data
 
-def apply_validation(image_features,batch_size):
+def apply_validation(image_features,args):
     batch_size = args.batch_size
     width = args.target_width
     height = args.target_height
