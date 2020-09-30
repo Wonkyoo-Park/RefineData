@@ -83,7 +83,7 @@ def lblsave(lbl):
         return lbl_array
     else:
         raise ValueError(
-            "[%s] Cannot save the pixel-wise class label as PNG. "
+            "This Cannot save the pixel-wise class label as PNG. "
             "Please consider using the .npy format."
         )
 
