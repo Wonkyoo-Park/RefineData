@@ -1,6 +1,6 @@
-#Customized classification model of tensorflow2.0
+# Customized segmentation model of tensorflow2.3 for eye disease
 
-This is implementation of classifcation model developed by tensorflow2.0 for customized compact version of squeezenet.
+This is implementation of segmentation model developed by tensorflow2.3 based on the extended UNET
 
 # Code
 
