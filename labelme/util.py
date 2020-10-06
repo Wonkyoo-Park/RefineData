@@ -1,6 +1,7 @@
 import imgviz
 import matplotlib.pyplot as plt
-import PIL.Image
+import PIL
+from PIL import ImageDraw
 from labelme.LabelFile import *
 import math
 import uuid
@@ -14,7 +15,7 @@ def shape_to_mask(
 ):
     mask = np.zeros(img_shape[:2], dtype=np.uint8)
     mask = PIL.Image.fromarray(mask)
-    draw = PIL.ImageDraw.Draw(mask)
+    draw = ImageDraw.Draw(mask)
     xy = [tuple(point) for point in points]
     if shape_type == "circle":
         assert len(xy) == 2, "Shape of shape_type=circle must have 2 points"
@@ -130,6 +131,7 @@ def show_img(img):
     cv2.waitKey(0)
 
 def save_img(path2img,img):
+    img=cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
     cv2.imwrite(path2img,img)
 
 
