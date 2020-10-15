@@ -12,17 +12,20 @@ from utils import metrics
 import utils
 
 class Model2eye():
-    def __init__(self,config,mode='normal'):
-        self.config = config
+    def __init__(self,maxClsSize,checkpoint_dir):
+        # self.config = config
         self.step = tf.Variable(0,dtype=tf.int64)
+        self.maxClsSize = maxClsSize
+        self.checkpoint_dir = checkpoint_dir
         self.build_model()
+
         # log_dir = os.path.join(config.summary_dir)
 
-        log_dir = os.path.join(config.summary_dir)
-        if not os.path.isdir(log_dir):
-            os.mkdir(log_dir, 0o777)
+        # log_dir = os.path.join(config.summary_dir)
+        # if not os.path.isdir(log_dir):
+        #     os.mkdir(log_dir, 0o777)
 
-        self.train_summary_writer = tf.summary.create_file_writer(log_dir)
+        # self.train_summary_writer = tf.summary.create_file_writer(log_dir)
         self.train_loss = tf.keras.metrics.Mean(name='train_loss')
         self.val_loss = tf.keras.metrics.Mean(name='train_loss')
         self.train_mean_iou = tf.keras.metrics.Mean(name='train_iou')
@@ -38,7 +41,7 @@ class Model2eye():
 
     def build_model(self):
         """model"""
-        self.model = build_model(batch=self.config.batch_size,maxClsSize=self.config.maxClsSize,pretrained_weights=False)
+        self.model = build_model(batch=1,maxClsSize=self.maxClsSize,pretrained_weights=False)
         # self.model = build_model(include_top=False,batch=self.config.batch_size,height=400, width=400, color=True, filters=64)
         learning_rate = 0.00001
         self.optimizer = tf.keras.optimizers.Adam(learning_rate)
@@ -50,10 +53,10 @@ class Model2eye():
         self.model.compile(optimizer='rmsprop',loss='binary_crossentropy',metrics=['accuracy'])
         # self.model.summary()
 
-        self.model.save(os.path.join(self.config.checkpoint_dir,"segmentation_epoch_{}.h5".format(epoch)))
+        # self.model.save(os.path.join(self.config.checkpoint_dir,"segmentation_epoch_{}.h5".format(epoch)))
 
     def restore(self, N=None):
-        path2load_model = os.path.join(self.config.checkpoint_dir,"segmentation_epoch_{}.h5".format(N))
+        path2load_model = os.path.join(self.checkpoint_dir,"segmentation_epoch_{}.h5".format(N))
         self.model.load_weights(path2load_model)
 
     # @tf.function
