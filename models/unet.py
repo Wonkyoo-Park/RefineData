@@ -83,7 +83,7 @@ from tensorflow import keras
 #     return metric_value
 
 
-def build_model(batch, pretrained_weights=False, input_size=(512, 512, 3,)):
+def build_model(batch, maxClsSize, pretrained_weights=False, input_size=(512, 512, 3,)):
     inputs = Input(input_size)
     conv1_1 = Conv2D(8, 3, activation='relu', padding='same', kernel_initializer='he_normal')(inputs)
     conv1 = Conv2D(8, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv1_1)
@@ -122,7 +122,7 @@ def build_model(batch, pretrained_weights=False, input_size=(512, 512, 3,)):
     merge9 = concatenate([conv1, up9], axis=3)
     conv9_1 = Conv2D(8, 3, activation='relu', padding='same', kernel_initializer='he_normal')(merge9)
     conv9 = Conv2D(8, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv9_1)
-    conv10 = Conv2D(1, 1, activation='sigmoid')(conv9)
+    conv10 = Conv2D(maxClsSize, 1, activation='sigmoid')(conv9)
 
     model = Model(inputs, conv10)
 
