@@ -69,19 +69,20 @@ def serve_by_tfrecords(config):
         predictions, target = model.test_step(data, config.maxClsSize)
         show_results.visual_result(i, data['img'], predictions, target)
 
-def serve_by_image(maxClsSize,checkpoint_dir,target_features,image):
+def serve_by_image(target_height, target_width, maxClsSize,checkpoint_dir,target_features,image):
     from models.serve_model_segmentation import Model2eye
     """
     ===========================================================
                          build model
     ===========================================================
     """
+    image = cv2.resize(image, (target_height, target_width))
     model = Model2eye(maxClsSize,checkpoint_dir)
     model.restore(50)
     data = image
     predictions = model.single_image_test_step(data, maxClsSize)
     result_dict, result_prob_dict,  segmentation_image = show_results.single_image_visual_result(data, predictions,target_features)
-
+    return result_dict, result_prob_dict,  segmentation_image
 
 
 if __name__ == "__main__":
@@ -90,6 +91,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--gpu", default=1, type=str)
     parser.add_argument("--epoch", default=5000, type=int)
+    parser.add_argument("--mode", default='serve', type=str,help="one of ['normal', 'serve']")
     parser.add_argument("--maxClsSize", default=45, type=int)
     parser.add_argument("--target_size", default=250, type=list, nargs="+", help="Image size after crop")
     parser.add_argument("--batch_size", default=32, type=int, help="Minibatch size(global)")
@@ -110,6 +112,7 @@ if __name__ == "__main__":
     parser.add_argument("--graph_mode", default=False, type=bool, help="use graph mode for training")
     parser.add_argument("--target_features", default=[1,4,5,32,33], type=bool, help="use graph mode for training")
     """
+    target features are as follows:
     Third_eyelid_protrude	1
     blepharitis_inflammation	4
     blepharitis_inner_inflammation	5
@@ -117,8 +120,12 @@ if __name__ == "__main__":
     gataract_initial	33
     """
     config = parser.parse_args()
-    # serve_by_tfrecords(config)
-    image=cv2.imread('/home/projects/data/capture_for_demo/cataract_img/AlphadoPhoto_2020-10-07 16_41_43_649.JPG')
-    image=cv2.resize(image,(config.target_height,config.target_width))
-    serve_by_image(config.maxClsSize,config.checkpoint_dir,config.target_features,image)
+
+    if config.mode == 'serve':
+        image=cv2.imread('/home/projects/data/capture_for_demo/cataract_img/AlphadoPhoto_2020-10-07 16_41_43_649.JPG')
+
+        result_dict, result_prob_dict,  segmentation_image  = serve_by_image(config.target_height, config.target_width, config.maxClsSize,config.checkpoint_dir,config.target_features,image)
+    else:
+        serve_by_tfrecords(config)
+
     # serve():
