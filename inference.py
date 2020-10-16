@@ -9,7 +9,7 @@ from utils import show_results
 
 
 warnings.filterwarnings(action='ignore')
-os.environ['CUDA_VISIBLE_DEVICES']='0'
+os.environ['CUDA_VISIBLE_DEVICES']='1'
 os.environ['TF_FORCE_GPU_ALLOW_GROWTH']='true'
 # os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
@@ -60,16 +60,17 @@ def serve_by_tfrecords(config):
     ===========================================================
     """
     model = Model2eye(config)
-    model.restore(50)
+    model.restore(390)
 
     for i, image_features in enumerate(validation_dataset):
         # print(image_features),
 
         data = apply_validation(image_features, config)
         predictions, target = model.test_step(data, config.maxClsSize)
-        show_results.visual_result(i, data['img'], predictions, target)
+        print("i", i)
+        show_results.visual_result(i, config.target_features, data['img'], predictions, target)
 
-def serve_by_image(target_height, target_width, maxClsSize,checkpoint_dir,target_features,image):
+def serve_by_image(threshold, target_height, target_width, maxClsSize,checkpoint_dir,target_features,image):
     from models.serve_model_segmentation import Model2eye
     """
     ===========================================================
@@ -78,10 +79,11 @@ def serve_by_image(target_height, target_width, maxClsSize,checkpoint_dir,target
     """
     image = cv2.resize(image, (target_height, target_width))
     model = Model2eye(maxClsSize,checkpoint_dir)
-    model.restore(50)
+    model.restore(30)
     data = image
     predictions = model.single_image_test_step(data, maxClsSize)
-    result_dict, result_prob_dict,  segmentation_image = show_results.single_image_visual_result(data, predictions,target_features)
+    result_dict, result_prob_dict,  segmentation_image = \
+        show_results.single_image_visual_result(data, predictions,target_features, threshold)
     return result_dict, result_prob_dict,  segmentation_image
 
 
@@ -110,7 +112,8 @@ if __name__ == "__main__":
     parser.add_argument("--summary_dir", default="outputs/summaries/", type=str, help="Dir for tensorboard logs.")
     parser.add_argument("--restore_file", default=None, type=str, help="file for restoration")
     parser.add_argument("--graph_mode", default=False, type=bool, help="use graph mode for training")
-    parser.add_argument("--target_features", default=[1,4,5,32,33], type=bool, help="use graph mode for training")
+    parser.add_argument("--target_features", default=[1,4,5,32,33], type=list, help="use graph mode for training")
+    parser.add_argument("--threshold", default=0.9, type=float, help="threshold for dnn")
     """
     target features are as follows:
     Third_eyelid_protrude	1
@@ -124,7 +127,7 @@ if __name__ == "__main__":
     if config.mode == 'serve':
         image=cv2.imread('/home/projects/data/capture_for_demo/cataract_img/AlphadoPhoto_2020-10-07 16_41_43_649.JPG')
 
-        result_dict, result_prob_dict,  segmentation_image  = serve_by_image(config.target_height, config.target_width, config.maxClsSize,config.checkpoint_dir,config.target_features,image)
+        result_dict, result_prob_dict,  segmentation_image  = serve_by_image(config.threshold,config.target_height, config.target_width, config.maxClsSize,config.checkpoint_dir,config.target_features,image)
     else:
         serve_by_tfrecords(config)
 
