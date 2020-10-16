@@ -109,6 +109,7 @@ def single_image_visual_result(image, prediction,target_features, threshold=0.5,
             # show_image = np.floor((1-alpha)*image) + np.floor((alpha*2/3)*masks_color) + np.floor((alpha/3)*lables_color)
             # show_image = (1-alpha)*image + alpha*lables_color
             result_image = (1-alpha)*image + alpha*result_image
+            show_image = np.floor(show_image).astype(np.uint8)
             show_image[:,:512,:] = image
             show_image[:,512:,:] = masks_color
             # print("no", no, np.max(masks_color), len(np.where(masks_color > 0)[0]))
