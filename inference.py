@@ -79,7 +79,8 @@ def serve_by_image(threshold, target_height, target_width, maxClsSize,checkpoint
     """
     image = cv2.resize(image, (target_height, target_width))
     model = Model2eye(maxClsSize,checkpoint_dir)
-    model.restore(30)
+
+    model.restore(165)
     data = image
     predictions = model.single_image_test_step(data, maxClsSize)
     result_dict, result_prob_dict,  segmentation_image = \
