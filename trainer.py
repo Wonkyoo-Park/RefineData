@@ -4,8 +4,9 @@ from utils.utils import *
 from tfrecord_util.parse_tfrecords import read_tfrecord, read_record_validation, read_record_only_img_validation, apply_aug_train, apply_validation, apply_only_img_validation
 import tensorflow as tf
 import warnings , os
+from models import fpn
 warnings.filterwarnings(action='ignore')
-os.environ['CUDA_VISIBLE_DEVICES']='0'
+# os.environ['CUDA_VISIBLE_DEVICES']='0'
 os.environ['TF_FORCE_GPU_ALLOW_GROWTH']='true'
 # os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
@@ -23,7 +24,7 @@ parser.add_argument("--gpu",default=1,type=str)
 parser.add_argument("--epoch", default=500, type=int)
 parser.add_argument("--maxClsSize", default=45, type=int)
 parser.add_argument("--target_size", default=250, type=list,nargs="+",help = "Image size after crop")
-parser.add_argument("--batch_size", default=32, type=int,help = "Minibatch size(global)")
+parser.add_argument("--batch_size", default=4, type=int,help = "Minibatch size(global)")
 parser.add_argument("--val_batch_size", default=1, type=int,help = "Minibatch size(global)")
 parser.add_argument("--data_root", default='/home/projects/data/train/tfrecords/', type=str,help = "Dir to data root")
 parser.add_argument("--val_data_root", default='/home/projects/data/validation/val_tfrecords/', type=str,help = "Dir to val data root")
@@ -40,13 +41,14 @@ parser.add_argument("--graph_mode", default=False, type=bool,help = "use graph m
 config = parser.parse_args()
 
 def generate_expname_automatically():
-    name = "OCR_%s_%02d_%02d_%02d_%-2d_%02d" % (config.model_tag, time_now.month,time_now.day, time_now.hour,
+    name = "alphado_eye_%s_%02d_%02d_%02d_%-2d_%02d" % (config.model_tag, time_now.month,time_now.day, time_now.hour,
                                                 time_now.minute, time_now.second)
     return name
 
 expname = generate_expname_automatically()
 # config.checkpoint_dir += "falling_" + config.model_tag; check_folder(config.checkpoint_dir)
-# config.summary_dir += expname ; check_folder(config.summary_dir)
+config.summary_dir += expname
+check_folder(config.summary_dir)
 """
 ===========================================================
                       prepare dataset
@@ -71,7 +73,8 @@ only_image_validation_dataset = read_record_only_img_validation(list_only_img_va
 ===========================================================
 """
 model = Model2eye(config)
-model.restore(50)
+# model = fpn.ResNet50Seg(config.maxClsSize, input_shape=(512, 512, 3), weights='imagenet')
+# model.restore(50)
 for e in range(config.epoch):
     for i, image_features in enumerate(dataset):
         # print(image_features),
