@@ -10,7 +10,7 @@ partial_resize = partial(tf.image.resize,method=tf.image.ResizeMethod.BILINEAR,a
 from utils import functional as F
 from utils import metrics
 import utils
-from models import pspnet
+
 from models import fpn
 class Model2eye():
     def __init__(self,config,mode='normal'):
