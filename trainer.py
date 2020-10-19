@@ -6,13 +6,12 @@ import tensorflow as tf
 import warnings , os
 from models import fpn
 warnings.filterwarnings(action='ignore')
-# os.environ['CUDA_VISIBLE_DEVICES']='0'
+os.environ['CUDA_VISIBLE_DEVICES']='0'
 os.environ['TF_FORCE_GPU_ALLOW_GROWTH']='true'
 # os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import logging
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
-
 
 """
 ===========================================================
@@ -78,13 +77,13 @@ only_image_validation_dataset = read_record_only_img_validation(list_only_img_va
 model = Model2eye(config)
 # model = fpn.ResNet50Seg(config.maxClsSize, input_shape=(512, 512, 3), weights='imagenet')
 # model.restore(50)
-timestr=datetime.datetime.today().strftime("%Y-%m-%d:%H-%M-%S")
-log_filename="/log/train_{}.log".format(timestr)
+timestr=datetime.datetime.today().strftime("%Y-%m-%d%H-%M-%S")
+log_filename="log/train_{}.log".format(timestr)
 # if not os.path.isfile(log_file):
 #     os.
 ch = logging.StreamHandler()
 ch.setLevel(logging.INFO)
-fh = logging.FileHandler(filename="log/train.log",mode = "w",encoding='utf-8')
+fh = logging.FileHandler(filename=log_filename,mode = "w",encoding='utf-8')
 fh.setLevel(logging.INFO)
 logger.addHandler(ch)
 logger.addHandler(fh)
@@ -97,8 +96,11 @@ for e in range(config.epoch):
         # print(image_features),
         data = apply_aug_train(image_features, config)
         log = model.train_step(data,config.maxClsSize,e)
+        if e==0 and i==0:
+            model.restore()
     # print("[training : epoch {} train step {}] step : {}".format(e,i,log))
     logger.info("[training : epoch {} train step {}] step : {}".format(e,i,log))
+
     if e % 5 == 0:
         save_path = model.save(e)
         for i, image_features in enumerate(validation_dataset):

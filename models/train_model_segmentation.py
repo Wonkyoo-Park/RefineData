@@ -49,6 +49,7 @@ class Model2eye():
         # self.model = build_model(include_top=False,batch=self.config.batch_size,height=400, width=400, color=True, filters=64)
         learning_rate = 0.00001
         self.optimizer = tf.keras.optimizers.Adam(learning_rate)
+
         # self.model.summary()
 
     def save(self,epoch):
@@ -56,12 +57,14 @@ class Model2eye():
         # self.mode.inputs[0].shape.dims[0]._value = 6
         self.model.compile(optimizer='rmsprop',loss='binary_crossentropy',metrics=['accuracy'])
         # self.model.summary()
-
-        self.model.save_weights(os.path.join(self.config.checkpoint_dir,"segmentation_epoch_{}.h5".format(epoch)))
+        # self.model.save_weights(os.path.join(self.config.checkpoint_dir, "segmentation_epoch_{}.h5".format(epoch)))
+        self.model.save('output/checkpoints/epoch_{}'.format(epoch))
+        # self.model.save_weights(os.path.join(self.config.checkpoint_dir,"segmentation_epoch_{}.h5".format(epoch)))
 
     def restore(self, N=None):
-        path2load_model = os.path.join(self.config.checkpoint_dir,"segmentation_epoch_{}.h5".format(N))
-        self.model.load_weights(path2load_model)
+        path2load_model = os.path.join("output/checkpoints/epoch_{}".format(N))
+        # self.model.compile(optimizer='rmsprop', loss='binary_crossentropy', metrics=['accuracy'])
+        self.model=tf.keras.models.load_model(path2load_model)
 
     # @tf.function
     def train_one_step(self,data,maxClsSize,e):

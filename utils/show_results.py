@@ -175,10 +175,10 @@ def visual_result(no, target_features, image, prediction,label,alpha=0.5):
             NofValidPixels = 0
             maxRatio = 0
         # if np.max(label[...,k])> 0 and k> 0:
-            # print("no",no, np.max(label[...,k]), len(np.where(label[...,k]>0)[0]))
+            print("no",no, np.max(prediction[...,k]))
             for i in range(H):
                 for j in range(W):
-                    if prediction[i, j,k] > 0.6:
+                    if prediction[i, j,k] > 0.3:
                         numpy_prediction[i, j, k] = 1
                         NofValidPixels += 1
                         if maxRatio < prediction[i, j, k]:

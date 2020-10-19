@@ -10,13 +10,14 @@ partial_resize = partial(tf.image.resize,method=tf.image.ResizeMethod.BILINEAR,a
 from utils import functional as F
 from utils import metrics
 import utils
-
+from models import fpn
 class Model2eye():
-    def __init__(self,maxClsSize,checkpoint_dir):
+    def __init__(self,maxClsSize,checkpoint_dir,stamp_epoch):
         # self.config = config
         self.step = tf.Variable(0,dtype=tf.int64)
         self.maxClsSize = maxClsSize
         self.checkpoint_dir = checkpoint_dir
+        self.stamp_epoch = stamp_epoch
         self.build_model()
 
         # log_dir = os.path.join(config.summary_dir)
@@ -41,11 +42,14 @@ class Model2eye():
 
     def build_model(self):
         """model"""
-        self.model = build_model(batch=1,maxClsSize=self.maxClsSize,pretrained_weights=False)
-        # self.model = build_model(include_top=False,batch=self.config.batch_size,height=400, width=400, color=True, filters=64)
-        learning_rate = 0.00001
-        self.optimizer = tf.keras.optimizers.Adam(learning_rate)
-        self.model.summary()
+        self.model=tf.keras.models.load_model('output/checkpoints/epoch_{}'.format(self.stamp_epoch))
+        # self.model = build_model(batch=1,maxClsSize=self.maxClsSize,pretrained_weights=False)
+        # self.model = fpn.ResNet50Seg(self.maxClsSize, input_shape=(512, 512, 3), weights='imagenet')
+        # # self.model = build_model(include_top=False,batch=self.config.batch_size,height=400, width=400, color=True, filters=64)
+        # learning_rate = 0.00001
+        # self.optimizer = tf.keras.optimizers.Adam(learning_rate)
+        # self.model.compile(optimizer='rmsprop', loss='binary_crossentropy', metrics=['accuracy'])
+        # self.model.summary()
 
     def save(self,epoch):
         # self.model.summary()
@@ -57,6 +61,7 @@ class Model2eye():
 
     def restore(self, N=None):
         path2load_model = os.path.join(self.checkpoint_dir,"segmentation_epoch_{}.h5".format(N))
+        # self.model.compile(optimizer='rmsprop', loss='binary_crossentropy', metrics=['accuracy'])
         self.model.load_weights(path2load_model)
 
     # @tf.function

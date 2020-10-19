@@ -60,7 +60,8 @@ def serve_by_tfrecords(config):
     ===========================================================
     """
     model = Model2eye(config)
-    model.restore(390)
+    model.restore(config.stamp_epoch)
+
 
     for i, image_features in enumerate(validation_dataset):
         # print(image_features),
@@ -70,7 +71,7 @@ def serve_by_tfrecords(config):
         print("i", i)
         show_results.visual_result(i, config.target_features, data['img'], predictions, target)
 
-def serve_by_image(threshold, target_height, target_width, maxClsSize,checkpoint_dir,target_features,image):
+def serve_by_image(stamp_epoch,threshold, target_height, target_width, maxClsSize,checkpoint_dir,target_features,image):
     from models.serve_model_segmentation import Model2eye
     """
     ===========================================================
@@ -78,9 +79,11 @@ def serve_by_image(threshold, target_height, target_width, maxClsSize,checkpoint
     ===========================================================
     """
     image = cv2.resize(image, (target_height, target_width))
-    model = Model2eye(maxClsSize,checkpoint_dir)
+    model = Model2eye(maxClsSize,checkpoint_dir,stamp_epoch)
 
-    model.restore(165)
+
+
+    # model.restore(115)
     data = image
     predictions = model.single_image_test_step(data, maxClsSize)
     result_dict, result_prob_dict,  segmentation_image = \
@@ -93,7 +96,7 @@ if __name__ == "__main__":
     time_now = datetime.datetime.now()
     parser = argparse.ArgumentParser()
     parser.add_argument("--gpu", default=1, type=str)
-    parser.add_argument("--epoch", default=5000, type=int)
+    parser.add_argument("--stamp_epoch", default=5, type=int)
     parser.add_argument("--mode", default='serve', type=str,help="one of ['normal', 'serve']")
     parser.add_argument("--maxClsSize", default=45, type=int)
     parser.add_argument("--target_size", default=250, type=list, nargs="+", help="Image size after crop")
@@ -114,21 +117,21 @@ if __name__ == "__main__":
     parser.add_argument("--restore_file", default=None, type=str, help="file for restoration")
     parser.add_argument("--graph_mode", default=False, type=bool, help="use graph mode for training")
     parser.add_argument("--target_features", default=[1,4,5,32,33], type=list, help="use graph mode for training")
-    parser.add_argument("--threshold", default=0.9, type=float, help="threshold for dnn")
+    parser.add_argument("--threshold", default=0.3, type=float, help="threshold for dnn")
     """
     target features are as follows:
     Third_eyelid_protrude	1
     blepharitis_inflammation	4
     blepharitis_inner_inflammation	5
-    gataract	32
-    gataract_initial	33
+    cataract	32
+    cataract_initial	33
     """
     config = parser.parse_args()
 
     if config.mode == 'serve':
         image=cv2.imread('/home/projects/data/capture_for_demo/cataract_img/AlphadoPhoto_2020-10-07 16_41_43_649.JPG')
 
-        result_dict, result_prob_dict,  segmentation_image  = serve_by_image(config.threshold,config.target_height, config.target_width, config.maxClsSize,config.checkpoint_dir,config.target_features,image)
+        result_dict, result_prob_dict,  segmentation_image  = serve_by_image(config.stamp_epoch,config.threshold,config.target_height, config.target_width, config.maxClsSize,config.checkpoint_dir,config.target_features,image)
     else:
         serve_by_tfrecords(config)
 
