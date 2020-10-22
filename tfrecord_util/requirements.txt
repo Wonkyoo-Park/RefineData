@@ -1,0 +1,16 @@
+python > 3.6
+tensorflow > 2.3.0
+argparse
+pillow
+numpy
+pandas
+logging
+datetime
+termcolor
+pybase64
+
+imgviz
+opencv-python
+keras-unet
+keras2onnx
+onnx2keras
