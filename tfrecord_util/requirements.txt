@@ -11,6 +11,13 @@ termcolor
 pybase64
 
 imgviz
+
+  - Dependencies
+  - matplotlib
+  - numpy
+  - Pillow>=5.3.0
+  - PyYAML
+
 opencv-python
 keras-unet
 keras2onnx
